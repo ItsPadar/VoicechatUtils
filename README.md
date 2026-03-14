@@ -1,0 +1,1 @@
+This is a (PaperMC-only) plugin for Simple Voice Chat that adds group chats for players who don't use microphones by adding a /mg command to message other players in the current group.

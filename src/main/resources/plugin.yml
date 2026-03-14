@@ -1,0 +1,22 @@
+name: voicechatutil
+version: '1.0'
+main: itspadar.voicechatutil.VoicechatUtil
+api-version: '1.21'
+prefix: VoicechatUtil
+authors: [ Its_Padar ]
+description: Add a way for players without mics to use voice chat groups!
+depend: [ voicechat ]
+permissions:
+  voicechatutil.chat.use:
+    description: "Use /mg to message users in current voice chat group"
+    default: true
+  voicechatutil.chat.spy:
+    description: "See all usages of /messagegroup"
+    default: false
+commands:
+  messagegroup:
+    description: "Message players in the current voice chat group!"
+    usage: "/mg <message you want to send>"
+    aliases: [ mg ]
+    permission: voicechatutil.chat.use
+    permission-message: "You do not have permission to use this command"
