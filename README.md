@@ -32,22 +32,26 @@ A PaperMC-only plugin that extends Simple Voice Chat by adding text messaging to
 # Thanks for using Voicechat Utils by Its_Padar!
 # https://modrinth.com/plugin/voicechat-util
 
+# Whether /mg and /messagegroup should be enabled. true/false
 enable_messagegroup: true
+# Whether messages sent with /mg should be forwarded to everyone with the voicechatutil.chat.spy permission. true/false
 enable_messagegroup_spying: false
-
-# <group> = group name
-# <name> = player name
-# <message> = message content
+# Customise the message sent to players from /mg.
+# Use https://webui.advntr.dev/ to test what it looks like and help customise it with colours.
+# <group> is replaced by the name of the group, <name> is replaced by the name of the player, and <message> is replaced by the message that is sent
 messagegroup_text: <gray>[<group>]</gray> <<name>> <message>
 ```
-Formatting tool: https://webui.advntr.dev/
+Formatting: https://webui.advntr.dev/
 
-Planned Features
 
-Group management commands
+Planned Features:
 
-Global broadcasting
+- Group management commands
 
-Moderation tools
+- Global broadcasting
 
-Chat filtering
+- Moderation tools
+
+- Chat filtering
+
+Find the plugin [HERE](https://modrinth.com/plugin/voicechat-utils)
