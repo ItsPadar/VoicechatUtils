@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class VoicechatUtil extends JavaPlugin {
     public static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-    public static final Component PREFIX = MINI_MESSAGE.deserialize("<click:open_url:'https://modrinth.com/project/voicechat-util'><hover:show_text:'https://modrinth.com/project/voicechat-util'>[<blue>Voicechat Utils</blue>]</hover></click>");
+    public static final Component PREFIX = MINI_MESSAGE.deserialize("<click:open_url:'https://modrinth.com/project/voicechat-utils'><hover:show_text:'https://modrinth.com/project/voicechat-util'>[<blue>Voicechat Utils</blue>]</hover></click>");
     public static Logger LOGGER;
     public static ComponentLogger COMPONENTLOGGER;
     public static FileConfiguration CONFIG;
