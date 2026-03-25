@@ -3,8 +3,10 @@
 
 # Whether /mg and /messagegroup should be enabled. true/false
 enable_messagegroup: true
+
 # Whether messages sent with /mg should be forwarded to everyone with the voicechatutil.chat.spy permission. true/false
 enable_messagegroup_spying: false
+
 # Customise the message sent to players from /mg.
 # Use https://webui.advntr.dev/ to test what it looks like and help customise it with colours.
 # <group> is replaced by the name of the group, <name> is replaced by the name of the player, and <message> is replaced by the message that is sent

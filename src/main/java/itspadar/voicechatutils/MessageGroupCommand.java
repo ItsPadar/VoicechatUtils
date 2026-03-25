@@ -1,4 +1,4 @@
-package itspadar.voicechatutil;
+package itspadar.voicechatutils;
 
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-import static itspadar.voicechatutil.SimpleVoiceChatAPI.API;
-import static itspadar.voicechatutil.VoicechatUtil.*;
+import static itspadar.voicechatutils.SimpleVoiceChatAPI.API;
+import static itspadar.voicechatutils.VoicechatUtils.*;
 
 public class MessageGroupCommand implements CommandExecutor, TabCompleter {
 
@@ -43,7 +43,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
             ));
             return true;
         }
-        if (!(sender.hasPermission("voicechatutil.chat.use") || sender.hasPermission("voicechat.speak"))) {
+        if (!(sender.hasPermission("voicechatutils.chat.use") || sender.hasPermission("voicechat.speak"))) {
             sender.sendMessage(MINI_MESSAGE.deserialize(
                     "<prefix> <red>You must have both voicechat.speak and voicechatutil.chat.use permissions to use this command!",
                     Placeholder.component("prefix", PREFIX)
@@ -71,7 +71,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         UUID groupID = group.getId();
         for (Player user : (player.getWorld().getPlayers())) {
             VoicechatConnection userconnection = API.getConnectionOf(user.getUniqueId());
-            if (user.hasPermission("nomicchat.chat.spy") && CONFIG.getBoolean("enable_messagegroup_spying", false)) {
+            if (user.hasPermission("voicechatutils.chat.spy") && CONFIG.getBoolean("enable_messagegroup_spying", false)) {
                 user.sendMessage(message);
                 continue;
             }

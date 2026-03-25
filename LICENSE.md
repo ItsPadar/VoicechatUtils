@@ -1,1 +1,1 @@
-All Rights Reserved by Its_Padar
+Voicechat Utils is All Rights Reserved by Its_Padar

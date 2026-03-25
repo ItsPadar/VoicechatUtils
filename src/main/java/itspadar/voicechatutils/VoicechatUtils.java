@@ -1,4 +1,4 @@
-package itspadar.voicechatutil;
+package itspadar.voicechatutils;
 
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import net.kyori.adventure.text.Component;
@@ -7,11 +7,12 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
-public class VoicechatUtil extends JavaPlugin {
+public class VoicechatUtils extends JavaPlugin {
     public static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-    public static final Component PREFIX = MINI_MESSAGE.deserialize("<click:open_url:'https://modrinth.com/project/voicechat-utils'><hover:show_text:'https://modrinth.com/project/voicechat-util'>[<blue>Voicechat Utils</blue>]</hover></click>");
+    public static final Component PREFIX = MINI_MESSAGE.deserialize("<click:open_url:'https://modrinth.com/project/voicechat-utils'><hover:show_text:'https://modrinth.com/project/voicechat-utils'>[<blue>Voicechat Utils</blue>]</hover></click>");
     public static Logger LOGGER;
     public static ComponentLogger COMPONENTLOGGER;
     public static FileConfiguration CONFIG;
@@ -24,7 +25,7 @@ public class VoicechatUtil extends JavaPlugin {
         saveDefaultConfig();
         CONFIG = getConfig();
 
-        getCommand("messagegroup").setExecutor(new MessageGroupCommand());
+        Objects.requireNonNull(getCommand("messagegroup")).setExecutor(new MessageGroupCommand());
 
         // register voice chat plugins
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
