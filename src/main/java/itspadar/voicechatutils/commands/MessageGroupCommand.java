@@ -1,9 +1,10 @@
-package itspadar.voicechatutils;
+package itspadar.voicechatutils.commands;
 
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static itspadar.voicechatutils.SimpleVoiceChatAPI.API;
+import static itspadar.voicechatutils.SimpleVoiceChatAPI.isInGroup;
 import static itspadar.voicechatutils.VoicechatUtils.*;
 
 public class MessageGroupCommand implements CommandExecutor, TabCompleter {
@@ -62,26 +64,20 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
             return false;
         }
         Component message = MINI_MESSAGE.deserialize(
-                CONFIG.getString("messagegroup_text", "<gray>[<group>]</gray> <<name>> <message>"),
+                CONFIG.getString("messagegroup_text"),
                 Placeholder.unparsed("group", group.getName()),
                 Placeholder.component("name", player.displayName()),
                 Placeholder.unparsed("message", String.join(" ", args))
         );
 
         UUID groupID = group.getId();
-        for (Player user : (player.getWorld().getPlayers())) {
-            VoicechatConnection userconnection = API.getConnectionOf(user.getUniqueId());
-            if (user.hasPermission("voicechatutils.chat.spy") && CONFIG.getBoolean("enable_messagegroup_spying", false)) {
+        for (Player user : Bukkit.getOnlinePlayers()) {
+            if (user.hasPermission("voicechatutils.chat.spy") && CONFIG.getBoolean("enable_messagegroup_spying")) {
                 user.sendMessage(message);
                 continue;
             }
-            if (userconnection != null) {
-                Group playergroup = userconnection.getGroup();
-                if (playergroup != null) {
-                    if (playergroup.getId() == groupID) {
-                        user.sendMessage(message);
-                    }
-                }
+            if (isInGroup(user.getUniqueId(), groupID)) {
+                user.sendMessage(message);
             }
         }
 

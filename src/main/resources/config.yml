@@ -1,6 +1,10 @@
 # Thanks for using Voicechat Utils by Its_Padar!
 # https://modrinth.com/plugin/voicechat-utils
 
+# Do not edit this unless you absolutely know what you are doing
+CONFIG_VERSION: 1.1
+
+
 # Whether /mg and /messagegroup should be enabled. true/false
 enable_messagegroup: true
 
