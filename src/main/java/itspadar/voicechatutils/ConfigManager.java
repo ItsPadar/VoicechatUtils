@@ -16,15 +16,8 @@ import static itspadar.voicechatutils.VoicechatUtils.LOGGER;
 
 public class ConfigManager {
     private static FileConfiguration config;
-
-    public boolean getBoolean(String path) {
-        return config.getBoolean(path);
-    }
-    public String getString(String path) {
-        return config.getString(path);
-    }
-
     public final int CONFIG_VERSION = 1;
+
     public ConfigManager(VoicechatUtils plugin) {
         plugin.saveDefaultConfig();
 
@@ -52,7 +45,7 @@ public class ConfigManager {
         if (configver == 0) {
             LOGGER.info("Found unknown config version. This is likely due to an old version being updated or something weird.");
         } else {
-            LOGGER.info("Found config version "+configver+" and attempting upgrade");
+            LOGGER.info("Found config version " + configver + " and attempting upgrade");
         }
 
         if (configver > CONFIG_VERSION) {
@@ -72,11 +65,10 @@ public class ConfigManager {
                 if ((!key.equals("CONFIG_VERSION")) && (value != null) && (value != originalValue)) {
                     originalConfig.set(key, value);
                     replaced_num++;
-                    LOGGER.finest("Replaced "+key+" from `"+originalValue+"` to `"+value+"`");
-                }
-                else {
+                    LOGGER.finest("Replaced " + key + " from `" + originalValue + "` to `" + value + "`");
+                } else {
                     ignored_num++;
-                    LOGGER.finest("Ignored "+key);
+                    LOGGER.finest("Ignored " + key);
                 }
             }
 
@@ -86,9 +78,17 @@ public class ConfigManager {
                 throw new RuntimeException(e);
             }
 
-            LOGGER.info("Updated config to version "+CONFIG_VERSION+" with "+replaced_num+" non default values converted and "+ignored_num+" ignored values!");
+            LOGGER.info("Updated config to version " + CONFIG_VERSION + " with " + replaced_num + " non default values converted and " + ignored_num + " ignored values!");
         }
 
         config = originalConfig;
+    }
+
+    public boolean getBoolean(String path) {
+        return config.getBoolean(path);
+    }
+
+    public String getString(String path) {
+        return config.getString(path);
     }
 }
