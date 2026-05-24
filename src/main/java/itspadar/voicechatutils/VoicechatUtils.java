@@ -5,7 +5,9 @@ import itspadar.voicechatutils.commands.MessageGroupCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -35,6 +37,10 @@ public class VoicechatUtils extends JavaPlugin {
             throw new RuntimeException("Simple Voice Chat BukkitVoicechatService was null! Is Simple Voice Chat installed?");
         }
 
-        getLogger().info("Loaded successfully!");
+        BukkitScheduler scheduler = Bukkit.getScheduler();
+        scheduler.cancelTasks(this);
+        if (!Objects.equals(CONFIG.join_leave_group_messages_mode, "disable")) {
+            scheduler.scheduleSyncRepeatingTask(this, SimpleVoiceChatAPI::playerTick, 0, 1);
+        }
     }
 }

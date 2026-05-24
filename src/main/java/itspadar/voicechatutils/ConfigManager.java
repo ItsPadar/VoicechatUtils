@@ -1,7 +1,6 @@
 package itspadar.voicechatutils;
 
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.BufferedReader;
@@ -15,8 +14,14 @@ import java.util.stream.Collectors;
 import static itspadar.voicechatutils.VoicechatUtils.LOGGER;
 
 public class ConfigManager {
-    private static FileConfiguration config;
-    public final int CONFIG_VERSION = 1;
+    final int CONFIG_VERSION = 1;
+
+    public Boolean enable_messagegroup;
+    public Boolean enable_messagegroup_spying;
+    public String messagegroup_text;
+    public String join_leave_group_messages_mode;
+    public String leave_group_message_text;
+    public String join_group_message_text;
 
     public ConfigManager(VoicechatUtils plugin) {
         plugin.saveDefaultConfig();
@@ -45,7 +50,7 @@ public class ConfigManager {
         if (configver == 0) {
             LOGGER.info("Found unknown config version. This is likely due to an old version being updated or something weird.");
         } else {
-            LOGGER.info("Found config version " + configver + " and attempting upgrade");
+            LOGGER.info("Found config version " + configver);
         }
 
         if (configver > CONFIG_VERSION) {
@@ -55,6 +60,7 @@ public class ConfigManager {
             );
         } else if (configver < CONFIG_VERSION) {
             // if per version migration logic is necessary then it would go here
+            LOGGER.info("Attempting upgrade to " + CONFIG_VERSION);
 
             int ignored_num = 0;
             int replaced_num = 0;
@@ -81,14 +87,14 @@ public class ConfigManager {
             LOGGER.info("Updated config to version " + CONFIG_VERSION + " with " + replaced_num + " non default values converted and " + ignored_num + " ignored values!");
         }
 
-        config = originalConfig;
-    }
+        enable_messagegroup = originalConfig.getBoolean("enable_messagegroup");
+        enable_messagegroup_spying = originalConfig.getBoolean("enable_messagegroup_spying");
+        messagegroup_text = originalConfig.getString("messagegroup_text");
+        join_leave_group_messages_mode = originalConfig.getString("join_leave_group_messages_mode");
+        leave_group_message_text = originalConfig.getString("leave_group_message_text");
+        join_group_message_text = originalConfig.getString("join_group_message_text");
 
-    public boolean getBoolean(String path) {
-        return config.getBoolean(path);
-    }
 
-    public String getString(String path) {
-        return config.getString(path);
+        LOGGER.info("Loaded config");
     }
 }

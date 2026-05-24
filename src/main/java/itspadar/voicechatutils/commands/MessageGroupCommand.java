@@ -30,7 +30,6 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         }
 
         VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
-
         if (connection == null) {
             sender.sendMessage(MINI_MESSAGE.deserialize(
                     "<prefix> <red>You must have Simple Voice Chat installed to use this command!",
@@ -38,7 +37,8 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
             ));
             return true;
         }
-        if (!CONFIG.getBoolean("enable_messagegroup")) {
+
+        if (!CONFIG.enable_messagegroup) {
             sender.sendMessage(MINI_MESSAGE.deserialize(
                     "<prefix> <red>This command is disabled in the config!",
                     Placeholder.component("prefix", PREFIX)
@@ -64,7 +64,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
             return false;
         }
         Component message = MINI_MESSAGE.deserialize(
-                CONFIG.getString("messagegroup_text"),
+                CONFIG.messagegroup_text,
                 Placeholder.unparsed("group", group.getName()),
                 Placeholder.component("name", player.displayName()),
                 Placeholder.unparsed("message", String.join(" ", args))
@@ -72,7 +72,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
 
         UUID groupID = group.getId();
         for (Player user : Bukkit.getOnlinePlayers()) {
-            if (user.hasPermission("voicechatutils.chat.spy") && CONFIG.getBoolean("enable_messagegroup_spying")) {
+            if (user.hasPermission("voicechatutils.chat.spy") && CONFIG.enable_messagegroup_spying) {
                 user.sendMessage(message);
                 continue;
             }

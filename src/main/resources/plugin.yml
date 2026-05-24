@@ -9,10 +9,10 @@ description: Add a way for players without mics to use voice chat groups!
 depend: [ voicechat ]
 permissions:
   voicechatutils.chat.use:
-    description: "Use /mg to message users in current voice chat group"
+    description: "Use `/messagegroup` to message users in current voice chat group"
     default: true
   voicechatutils.chat.spy:
-    description: "See all usages of /messagegroup"
+    description: "See all messages sent using `/messagegroup`"
     default: false
 commands:
   messagegroup:
@@ -20,4 +20,3 @@ commands:
     usage: "/mg <message you want to send>"
     aliases: [ mg ]
     permission: voicechatutils.chat.use
-    permission-message: "You do not have permission to use this command"
