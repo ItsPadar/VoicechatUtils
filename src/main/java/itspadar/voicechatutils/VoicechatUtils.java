@@ -42,5 +42,6 @@ public class VoicechatUtils extends JavaPlugin {
         if (!Objects.equals(CONFIG.join_leave_group_messages_mode, "disable")) {
             scheduler.scheduleSyncRepeatingTask(this, SimpleVoiceChatAPI::playerTick, 0, 1);
         }
+        LOGGER.info("VoicechatUtils "+Version.VERSION+" has loaded!");
     }
 }
