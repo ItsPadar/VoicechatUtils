@@ -66,6 +66,8 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         Component message = MINI_MESSAGE.deserialize(
                 CONFIG.messagegroup_text,
                 Placeholder.unparsed("group", group.getName()),
+                Placeholder.parsed("prefix", prefixSuffix.getPrefix(player)),
+                Placeholder.parsed("suffix", prefixSuffix.getSuffix(player)),
                 Placeholder.component("name", player.displayName()),
                 Placeholder.unparsed("message", String.join(" ", args))
         );
@@ -81,7 +83,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        COMPONENTLOGGER.info(message);
+        COMPONENTLOGGER.info(Component.text("[mg] ").append(message));
 
         return true;
     }

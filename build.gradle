@@ -16,11 +16,16 @@ repositories {
         name = "simplevoicechat-repo"
         url = 'https://maven.maxhenkel.de/repository/public'
     }
+    maven {
+        name = "jitpack"
+        url "https://jitpack.io"
+    }
 }
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT"
     implementation "de.maxhenkel.voicechat:voicechat-api:2.6.0"
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 }
 
 tasks {
@@ -54,7 +59,7 @@ processResources {
     def props = [version: version]
     inputs.properties props
     filteringCharset 'UTF-8'
-    filesMatching(['plugin.yml', 'Version.java']) {
+    filesMatching('plugin.yml') {
         expand props
     }
 }

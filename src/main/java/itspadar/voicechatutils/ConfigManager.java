@@ -8,13 +8,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static itspadar.voicechatutils.VoicechatUtils.LOGGER;
 
 public class ConfigManager {
-    final int CONFIG_VERSION = 1;
+    final int CONFIG_VERSION = 2;
 
     public Boolean enable_messagegroup;
     public Boolean enable_messagegroup_spying;
@@ -22,6 +23,7 @@ public class ConfigManager {
     public String join_leave_group_messages_mode;
     public String leave_group_message_text;
     public String join_group_message_text;
+    public Boolean enable_prefix_suffix_support;
 
     public ConfigManager(VoicechatUtils plugin) {
         plugin.saveDefaultConfig();
@@ -59,6 +61,23 @@ public class ConfigManager {
                     "! Please ensure you have the correct VoicechatUtils version! Set CONFIG_VERSION to 0 or remove config.yml to override this warning."
             );
         } else if (configver < CONFIG_VERSION) {
+            if (configver < 2) {
+                for (String key : List.of("messagegroup_text", "join_group_message_text", "leave_group_message_text")) {
+                    String value = currentConfig.getString(key);
+                    if (value != null) {
+                        if (value.contains("<<name>>")) {
+                            currentConfig.set(key, value
+                                    .replaceFirst("<<name>>", "<prefix><<name>><suffix>")
+                            );
+                        } else {
+                            currentConfig.set(key, value
+                                    .replaceFirst("<name>", "<prefix><name><suffix>")
+                            );
+                        }
+                    }
+                }
+                configver = 2;
+            }
             // if per version migration logic is necessary then it would go here
             LOGGER.info("Attempting upgrade to " + CONFIG_VERSION);
 
@@ -93,6 +112,7 @@ public class ConfigManager {
         join_leave_group_messages_mode = originalConfig.getString("join_leave_group_messages_mode");
         leave_group_message_text = originalConfig.getString("leave_group_message_text");
         join_group_message_text = originalConfig.getString("join_group_message_text");
+        enable_prefix_suffix_support = originalConfig.getBoolean("enable_prefix_suffix_support");
 
 
         LOGGER.info("Loaded config");

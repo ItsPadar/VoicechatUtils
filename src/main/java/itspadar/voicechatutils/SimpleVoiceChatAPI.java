@@ -76,7 +76,9 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
         Component message = MINI_MESSAGE.deserialize(
                 CONFIG.join_group_message_text,
                 Placeholder.unparsed("group", group.getName()),
-                Placeholder.component("name", player.displayName())
+                Placeholder.component("name", player.displayName()),
+                Placeholder.parsed("prefix", prefixSuffix.getPrefix(player)),
+                Placeholder.parsed("suffix", prefixSuffix.getSuffix(player))
         );
         LOGGER.info(player.getName() + " joined group " + group.getName());
         if (CONFIG.join_leave_group_messages_mode.equals("actionbar")) {
@@ -90,7 +92,9 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
         Component message = MINI_MESSAGE.deserialize(
                 CONFIG.leave_group_message_text,
                 Placeholder.unparsed("group", group.getName()),
-                Placeholder.component("name", player.displayName())
+                Placeholder.component("name", player.displayName()),
+                Placeholder.parsed("prefix", prefixSuffix.getPrefix(player)),
+                Placeholder.parsed("suffix", prefixSuffix.getSuffix(player))
         );
         LOGGER.info(player.getName() + " left group " + group.getName());
         if (CONFIG.join_leave_group_messages_mode.equals("actionbar")) {
