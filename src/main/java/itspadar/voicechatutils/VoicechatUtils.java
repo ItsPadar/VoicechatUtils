@@ -1,6 +1,7 @@
 package itspadar.voicechatutils;
 
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
+import itspadar.voicechatutils.commands.MGToggleCommand;
 import itspadar.voicechatutils.commands.MessageGroupCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -29,6 +30,7 @@ public class VoicechatUtils extends JavaPlugin {
         CONFIG = new ConfigManager(this);
 
         Objects.requireNonNull(getCommand("messagegroup")).setExecutor(new MessageGroupCommand());
+        Objects.requireNonNull(getCommand("mgtoggle")).setExecutor(new MGToggleCommand());
 
         // register voice chat plugins
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
@@ -45,6 +47,8 @@ public class VoicechatUtils extends JavaPlugin {
         }
 
         prefixSuffix = new PrefixSuffix(this);
+
+        Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
 
         //noinspection deprecation
         LOGGER.info("VoicechatUtils " + this.getDescription().getVersion() + " has loaded!");

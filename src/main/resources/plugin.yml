@@ -20,3 +20,8 @@ commands:
     usage: "/mg <message you want to send>"
     aliases: [ mg ]
     permission: voicechatutils.chat.use
+  mgtoggle:
+    description: "Toggle all messages being sent to the current voice chat group!"
+    usage: "/mgtoggle [<on|off>]"
+    aliases: [ messagegrouptoggle ]
+    permission: voicechatutils.chat.use

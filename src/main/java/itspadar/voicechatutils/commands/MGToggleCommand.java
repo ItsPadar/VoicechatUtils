@@ -1,10 +1,7 @@
 package itspadar.voicechatutils.commands;
 
-import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,38 +10,19 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 import static itspadar.voicechatutils.SimpleVoiceChatAPI.API;
-import static itspadar.voicechatutils.SimpleVoiceChatAPI.isInGroup;
 import static itspadar.voicechatutils.VoicechatUtils.*;
 
-public class MessageGroupCommand implements CommandExecutor, TabCompleter {
+public class MGToggleCommand implements CommandExecutor, TabCompleter {
 
-    public static void sendMessageGroupMessage(Group group, Player player, String mg) {
-        Component message = MINI_MESSAGE.deserialize(
-                CONFIG.messagegroup_text,
-                Placeholder.unparsed("group", group.getName()),
-                Placeholder.parsed("prefix", prefixSuffix.getPrefix(player)),
-                Placeholder.parsed("suffix", prefixSuffix.getSuffix(player)),
-                Placeholder.component("name", player.displayName()),
-                Placeholder.unparsed("message", mg)
-        );
+    private static final HashSet<UUID> MessageGroupToggledOn = new HashSet<>();
 
-        UUID groupID = group.getId();
-        for (Player user : Bukkit.getOnlinePlayers()) {
-            if (user.hasPermission("voicechatutils.chat.spy") && CONFIG.enable_messagegroup_spying) {
-                user.sendMessage(message);
-                continue;
-            }
-            if (isInGroup(user.getUniqueId(), groupID)) {
-                user.sendMessage(message);
-            }
-        }
-
-
-        COMPONENTLOGGER.info(Component.text("[mg] ").append(message));
+    public static boolean hasMessageGroupToggledOn(UUID player) {
+        return MessageGroupToggledOn.contains(player);
     }
 
     @Override
@@ -77,24 +55,48 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
             ));
             return true;
         }
-        Group group = connection.getGroup();
-        if (group == null) {
-            sender.sendMessage(MINI_MESSAGE.deserialize(
-                    "<prefix> <red>You must be in a group to use this command!",
-                    Placeholder.component("prefix", PREFIX)
-            ));
-            return true;
-        }
+
         if (args.length == 0) {
+            if (MessageGroupToggledOn.contains(player.getUniqueId())) {
+                MessageGroupToggledOn.remove(player.getUniqueId());
+            } else {
+                MessageGroupToggledOn.add(player.getUniqueId());
+            }
+        } else if (args.length == 1) {
+            if (args[0].equals("on")) {
+                MessageGroupToggledOn.add(player.getUniqueId());
+            } else if (args[0].equals("off")) {
+                MessageGroupToggledOn.remove(player.getUniqueId());
+            } else {
+                return false;
+            }
+
+        } else {
             return false;
         }
 
-        sendMessageGroupMessage(group, player, String.join(" ", args));
+        String state;
+        if (hasMessageGroupToggledOn(player.getUniqueId())) {
+            state = "<green>ON";
+        } else {
+            state = "<red>OFF";
+        }
+        sender.sendMessage(MINI_MESSAGE.deserialize(
+                "<prefix> Chat MessageGroup toggled <bold><state></bold><white>!",
+                Placeholder.component("prefix", PREFIX),
+                Placeholder.parsed("state", state)
+        ));
+
+        COMPONENTLOGGER.info(MINI_MESSAGE.deserialize(
+                "<player> toggled Chat MessageGroup <state>",
+                Placeholder.unparsed("player", player.getName()),
+                Placeholder.parsed("state", state)
+        ));
 
         return true;
     }
 
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return List.of("");
+        return List.of("", "on", "off");
     }
 }
