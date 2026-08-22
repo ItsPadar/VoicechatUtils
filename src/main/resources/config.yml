@@ -2,7 +2,7 @@
 # https://modrinth.com/plugin/voicechat-utils
 
 # Do not edit this unless you absolutely know what you are doing
-CONFIG_VERSION: 2
+CONFIG_VERSION: 3
 
 
 
@@ -17,7 +17,7 @@ enable_messagegroup_spying: false
 # Customise the message sent to players from /mg.
 # Use https://webui.advntr.dev/ to test what it looks like and help customise it with colours.
 # <group> is replaced by the name of the group, <name> is replaced by the name of the player, and <message> is replaced by the message that is sent
-messagegroup_text: <gray>[<group>]</gray> <prefix><<name>><suffix> <message>
+messagegroup_text: <gray>[<group>]</gray> <prefix><<name>><suffix><reset> <message>
 
 
 # How messages should be sent to players if they join/leave a group
@@ -37,3 +37,10 @@ leave_group_message_text: <gray>[<group>]</gray> <red>-</red> <prefix><name><suf
 # This requires the Vault API and a permissions plugin such as Luckperms to be installed to work!
 # Vault can be found at https://www.spigotmc.org/resources/vault.34315/ or https://dev.bukkit.org/projects/vault
 enable_prefix_suffix_support: true
+
+# Set the parse mode for prefixes and suffixes.
+# Its recommended to set this away from automatic if possible
+# minimessage - <red> <#FF0000> - The MiniMessage format, this is recommended
+# legacy - &#FF0000 - The legacy formatting code format
+# automatic - If there is a & in the prefix/suffix parse as legacy, otherwise assume minimessage
+prefix_suffix_colour_mode: automatic

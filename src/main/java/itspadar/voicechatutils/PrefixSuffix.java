@@ -1,5 +1,6 @@
 package itspadar.voicechatutils;
 
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,11 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServiceRegisterEvent;
 import org.bukkit.event.server.ServiceUnregisterEvent;
 
-import static itspadar.voicechatutils.VoicechatUtils.CONFIG;
-import static itspadar.voicechatutils.VoicechatUtils.LOGGER;
+import static itspadar.voicechatutils.VoicechatUtils.*;
 import static org.bukkit.Bukkit.getServer;
 
 public class PrefixSuffix implements Listener {
+    private static LegacyComponentSerializer LEGACYCOMPONENT;
     private Chat vaultChat = null;
 
     public PrefixSuffix(VoicechatUtils plugin) {
@@ -20,6 +21,7 @@ public class PrefixSuffix implements Listener {
                 LOGGER.info("Vault detected");
                 refreshVault();
                 getServer().getPluginManager().registerEvents(this, plugin);
+                LEGACYCOMPONENT = LegacyComponentSerializer.legacyAmpersand();
             } else {
                 LOGGER.info("Vault not detected, prefix suffix support disabled");
                 if (getServer().getPluginManager().getPlugin("LuckPerms") != null) {
@@ -28,6 +30,15 @@ public class PrefixSuffix implements Listener {
             }
         } else {
             LOGGER.info("");
+        }
+    }
+
+    private String convert(String text) {
+        LOGGER.info(String.valueOf(VoicechatUtils.CONFIG.prefix_suffix_colour_mode));
+        if (CONFIG.prefix_suffix_colour_mode.equals("legacy") || (CONFIG.prefix_suffix_colour_mode.equals("automatic") && text.contains("&"))) {
+            return MINI_MESSAGE.serialize(LEGACYCOMPONENT.deserialize(text));
+        } else {
+            return text;
         }
     }
 
@@ -55,7 +66,7 @@ public class PrefixSuffix implements Listener {
 
     public String getPrefix(Player player) {
         if (vaultChat != null) {
-            return vaultChat.getPlayerPrefix(player);
+            return convert(vaultChat.getPlayerPrefix(player));
         } else {
             return "";
         }
@@ -63,7 +74,7 @@ public class PrefixSuffix implements Listener {
 
     public String getSuffix(Player player) {
         if (vaultChat != null) {
-            return vaultChat.getPlayerSuffix(player);
+            return convert(vaultChat.getPlayerSuffix(player));
         } else {
             return "";
         }

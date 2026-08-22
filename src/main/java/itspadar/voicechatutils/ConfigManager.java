@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static itspadar.voicechatutils.VoicechatUtils.LOGGER;
 
 public class ConfigManager {
-    final int CONFIG_VERSION = 2;
+    final int CONFIG_VERSION = 3;
 
     public Boolean enable_messagegroup;
     public Boolean enable_messagegroup_spying;
@@ -24,6 +24,7 @@ public class ConfigManager {
     public String leave_group_message_text;
     public String join_group_message_text;
     public Boolean enable_prefix_suffix_support;
+    public String prefix_suffix_colour_mode;
 
     public ConfigManager(VoicechatUtils plugin) {
         plugin.saveDefaultConfig();
@@ -32,18 +33,9 @@ public class ConfigManager {
         YamlConfiguration currentConfig = new YamlConfiguration();
         currentConfig.options().parseComments(true);
 
-        YamlConfiguration originalConfig = new YamlConfiguration();
-        originalConfig.options().parseComments(true);
 
         try {
             currentConfig.load(currentConfigFile);
-            originalConfig.loadFromString(
-                    new BufferedReader(
-                            new InputStreamReader(Objects.requireNonNull(plugin.getResource("config.yml")), StandardCharsets.UTF_8))
-                            .lines()
-                            .collect(Collectors.joining("\n")
-                            )
-            );
         } catch (IOException | InvalidConfigurationException e) {
             throw new RuntimeException("Exception occurred while loading configuration files!", e);
         }
@@ -81,6 +73,21 @@ public class ConfigManager {
             // if per version migration logic is necessary then it would go here
             LOGGER.info("Attempting upgrade to " + CONFIG_VERSION);
 
+            YamlConfiguration originalConfig = new YamlConfiguration();
+            originalConfig.options().parseComments(true);
+
+            try {
+                originalConfig.loadFromString(
+                        new BufferedReader(
+                                new InputStreamReader(Objects.requireNonNull(plugin.getResource("config.yml")), StandardCharsets.UTF_8))
+                                .lines()
+                                .collect(Collectors.joining("\n")
+                                )
+                );
+            } catch (InvalidConfigurationException e) {
+                throw new RuntimeException("Exception occurred while loading configuration files!", e);
+            }
+
             int ignored_num = 0;
             int replaced_num = 0;
             for (String key : originalConfig.getKeys(true)) {
@@ -102,18 +109,33 @@ public class ConfigManager {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            currentConfig = originalConfig;
 
             LOGGER.info("Updated config to version " + CONFIG_VERSION + " with " + replaced_num + " non default values converted and " + ignored_num + " ignored values!");
         }
 
-        enable_messagegroup = originalConfig.getBoolean("enable_messagegroup");
-        enable_messagegroup_spying = originalConfig.getBoolean("enable_messagegroup_spying");
-        messagegroup_text = originalConfig.getString("messagegroup_text");
-        join_leave_group_messages_mode = originalConfig.getString("join_leave_group_messages_mode");
-        leave_group_message_text = originalConfig.getString("leave_group_message_text");
-        join_group_message_text = originalConfig.getString("join_group_message_text");
-        enable_prefix_suffix_support = originalConfig.getBoolean("enable_prefix_suffix_support");
-
+        enable_messagegroup = currentConfig.getBoolean("enable_messagegroup");
+        enable_messagegroup_spying = currentConfig.getBoolean("enable_messagegroup_spying");
+        messagegroup_text = currentConfig.getString("messagegroup_text");
+        join_leave_group_messages_mode = currentConfig.getString("join_leave_group_messages_mode");
+        switch (join_leave_group_messages_mode) {
+            case "chat", "actionbar", "disable":
+                break;
+            case null, default:
+                LOGGER.warning("Invalid value for join_leave_group_messages_mode, defaulting to chat");
+                join_leave_group_messages_mode = "chat";
+        }
+        leave_group_message_text = currentConfig.getString("leave_group_message_text");
+        join_group_message_text = currentConfig.getString("join_group_message_text");
+        enable_prefix_suffix_support = currentConfig.getBoolean("enable_prefix_suffix_support");
+        prefix_suffix_colour_mode = currentConfig.getString("prefix_suffix_colour_mode");
+        switch (prefix_suffix_colour_mode) {
+            case "automatic", "minimessage", "legacy":
+                break;
+            case null, default:
+                LOGGER.warning("Invalid value for prefix_suffix_colour_mode, defaulting to automatic");
+                prefix_suffix_colour_mode = "automatic";
+        }
 
         LOGGER.info("Loaded config");
     }
