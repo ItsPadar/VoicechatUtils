@@ -28,13 +28,10 @@ public class PrefixSuffix implements Listener {
                     LOGGER.severe("LuckPerms installed but support is not available in this plugin as Vault, https://www.spigotmc.org/resources/vault.34315/ which provides an API for getting prefixes and suffixes, is not installed! \nPlease install Vault!");
                 }
             }
-        } else {
-            LOGGER.info("");
         }
     }
 
     private String convert(String text) {
-        LOGGER.info(String.valueOf(VoicechatUtils.CONFIG.prefix_suffix_colour_mode));
         if (CONFIG.prefix_suffix_colour_mode.equals("legacy") || (CONFIG.prefix_suffix_colour_mode.equals("automatic") && text.contains("&"))) {
             return MINI_MESSAGE.serialize(LEGACYCOMPONENT.deserialize(text));
         } else {
