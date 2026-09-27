@@ -24,12 +24,14 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
         if (API != null) {
             Collection<? extends Player> players = getOnlinePlayers();
 
-            for (Player player : playerGroupMap.keySet()) {
+            playerGroupMap.keySet().removeIf(player -> {
                 if (!players.contains(player)) {
-                    playerGroupMap.remove(player);
-                    //LOGGER.info("removed "+player.getName());
+//                    LOGGER.info("removed "+player.getName()+": "+playerGroupMap.get(player).getName());
+                    leaveGroupEvent(player, playerGroupMap.get(player));
+                    return true;
                 }
-            }
+                return false;
+            });
 
             for (Player player : players) {
                 VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
@@ -62,6 +64,7 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
 
                         if (newGroup == null) {
                             playerGroupMap.remove(player);
+                            // LOGGER.log("removed "+player.getName());
                         } else {
                             playerGroupMap.put(player, newGroup);
                         }
