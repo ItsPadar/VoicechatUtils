@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id("xyz.jpenilla.run-paper") version "2.3.1"
+    id("xyz.jpenilla.run-paper") version "3.1.0"
 }
 
 group = 'itspadar.voicechatutils'
@@ -34,6 +34,10 @@ tasks {
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.21")
+        // VoicechatUtils hard depends on Simple Voice Chat, so download it into the test server too.
+        downloadPlugins {
+            modrinth("simple-voice-chat", "bukkit-2.6.24")
+        }
     }
 }
 
