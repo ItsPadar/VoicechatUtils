@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static itspadar.voicechatutils.VoicechatUtils.LOGGER;
 
 public class ConfigManager {
-    final int CONFIG_VERSION = 3;
+    final int CONFIG_VERSION = 4;
 
     public Boolean enable_messagegroup;
     public Boolean enable_messagegroup_spying;
@@ -25,6 +25,7 @@ public class ConfigManager {
     public String join_group_message_text;
     public Boolean enable_prefix_suffix_support;
     public String prefix_suffix_colour_mode;
+    public Boolean voice_mute_blocks_messagegroup;
 
     public ConfigManager(VoicechatUtils plugin) {
         plugin.saveDefaultConfig();
@@ -94,7 +95,7 @@ public class ConfigManager {
                 // check key exists in current config, is not the same in both, and that it is not CONFIG_VERSION
                 Object value = currentConfig.get(key);
                 Object originalValue = originalConfig.get(key);
-                if ((!key.equals("CONFIG_VERSION")) && (value != null) && (value != originalValue)) {
+                if ((!key.equals("CONFIG_VERSION")) && (value != null) && !Objects.equals(value, originalValue)) {
                     originalConfig.set(key, value);
                     replaced_num++;
                     LOGGER.finest("Replaced " + key + " from `" + originalValue + "` to `" + value + "`");
@@ -136,6 +137,8 @@ public class ConfigManager {
                 LOGGER.warning("Invalid value for prefix_suffix_colour_mode, defaulting to automatic");
                 prefix_suffix_colour_mode = "automatic";
         }
+
+        voice_mute_blocks_messagegroup = currentConfig.getBoolean("voice_mute_blocks_messagegroup", true);
 
         LOGGER.info("Loaded config");
     }

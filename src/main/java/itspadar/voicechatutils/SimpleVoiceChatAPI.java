@@ -5,6 +5,7 @@ import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
+import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStartedEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -52,7 +53,7 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
                         newGroupID = null;
                     }
 
-                    if (newGroupID != oldGroupID) {
+                    if (!Objects.equals(newGroupID, oldGroupID)) {
                         if (oldGroup != null) {
                             // leave event
                             leaveGroupEvent(player, oldGroup);
@@ -116,7 +117,7 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
         if (connection != null) {
             Group group = connection.getGroup();
             if (group != null) {
-                return group.getId() == groupid;
+                return group.getId().equals(groupid);
             }
         }
 
@@ -141,10 +142,26 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
     @Override
     public void registerEvents(EventRegistration register) {
         register.registerEvent(VoicechatServerStartedEvent.class, this::serverStart);
+        register.registerEvent(MicrophonePacketEvent.class, this::onMicrophonePacket);
         LOGGER.info("Registered events");
     }
 
     public void serverStart(VoicechatServerStartedEvent event) {
         API = event.getVoicechat();
+    }
+
+    /**
+     * Drops audio from voice muted players before it reaches anyone. Runs on the voice chat thread.
+     */
+    private void onMicrophonePacket(MicrophonePacketEvent event) {
+        VoicechatConnection sender = event.getSenderConnection();
+        if (sender == null) {
+            return;
+        }
+        MuteManager.Mute mute = MUTES.getMute(sender.getPlayer().getUuid());
+        if (mute != null) {
+            event.cancel();
+            MUTES.notifyMutedSpeaker(mute);
+        }
     }
 }

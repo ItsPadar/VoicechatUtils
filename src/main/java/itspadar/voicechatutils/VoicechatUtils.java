@@ -3,6 +3,7 @@ package itspadar.voicechatutils;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import itspadar.voicechatutils.commands.MGToggleCommand;
 import itspadar.voicechatutils.commands.MessageGroupCommand;
+import itspadar.voicechatutils.commands.VCMuteCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -10,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -20,6 +22,7 @@ public class VoicechatUtils extends JavaPlugin {
     public static ComponentLogger COMPONENTLOGGER;
     public static ConfigManager CONFIG;
     public static PrefixSuffix prefixSuffix;
+    public static MuteManager MUTES;
 
     @Override
     public void onEnable() {
@@ -31,6 +34,12 @@ public class VoicechatUtils extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("messagegroup")).setExecutor(new MessageGroupCommand());
         Objects.requireNonNull(getCommand("mgtoggle")).setExecutor(new MGToggleCommand());
+
+        MUTES = new MuteManager(this);
+        VCMuteCommand vcMuteCommand = new VCMuteCommand();
+        for (String name : List.of("vcmute", "vcunmute", "vcmutes")) {
+            Objects.requireNonNull(getCommand(name)).setExecutor(vcMuteCommand);
+        }
 
         // register voice chat plugins
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
@@ -50,7 +59,6 @@ public class VoicechatUtils extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
 
-        //noinspection deprecation
-        LOGGER.info("VoicechatUtils " + this.getDescription().getVersion() + " has loaded!");
+        LOGGER.info("VoicechatUtils " + getPluginMeta().getVersion() + " has loaded!");
     }
 }
