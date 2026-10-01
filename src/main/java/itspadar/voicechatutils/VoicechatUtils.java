@@ -50,7 +50,6 @@ public class VoicechatUtils extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
 
-        //noinspection deprecation
-        LOGGER.info("VoicechatUtils " + this.getDescription().getVersion() + " has loaded!");
+        LOGGER.info("VoicechatUtils " + getPluginMeta().getVersion() + " has loaded!");
     }
 }

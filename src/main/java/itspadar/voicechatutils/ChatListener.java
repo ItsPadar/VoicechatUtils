@@ -14,20 +14,23 @@ import static itspadar.voicechatutils.SimpleVoiceChatAPI.API;
 public class ChatListener implements Listener {
 
     @EventHandler
-    public static void onPlayerChat(@SuppressWarnings("deprecation") AsyncPlayerChatEvent event) {
+    public void onPlayerChat(@SuppressWarnings("deprecation") AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
 
-        Group group;
-        VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
-        if (connection != null) {
-            group = connection.getGroup();
-            if (group != null) {
-                if (MGToggleCommand.hasMessageGroupToggledOn(player.getUniqueId())) {
-                    MessageGroupCommand.sendMessageGroupMessage(group, player, message);
-                    event.setCancelled(true);
-                }
-            }
+        if (API == null || !MGToggleCommand.hasMessageGroupToggledOn(player.getUniqueId())) {
+            return;
         }
+        VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
+        if (connection == null) {
+            return;
+        }
+        Group group = connection.getGroup();
+        if (group == null) {
+            return;
+        }
+
+        MessageGroupCommand.sendMessageGroupMessage(group, player, message);
+        event.setCancelled(true);
     }
 }

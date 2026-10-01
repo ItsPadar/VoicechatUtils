@@ -47,42 +47,54 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         COMPONENTLOGGER.info(Component.text("[mg] ").append(message));
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    static void sendError(CommandSender sender, String text) {
+        sender.sendMessage(MINI_MESSAGE.deserialize(
+                "<prefix> <red>" + text,
+                Placeholder.component("prefix", PREFIX)
+        ));
+    }
+
+    /**
+     * Checks everything a player needs to use /mg or /mgtoggle, telling them what is wrong if something is.
+     *
+     * @return the player's voice chat connection, or null if they cannot use message group commands
+     */
+    static @Nullable VoicechatConnection checkCanUseMessageGroup(CommandSender sender) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command!");
-            return true;
+            return null;
         }
-
+        if (!CONFIG.enable_messagegroup) {
+            sendError(sender, "This command is disabled in the config!");
+            return null;
+        }
+        if (!(sender.hasPermission("voicechatutils.chat.use") && sender.hasPermission("voicechat.speak"))) {
+            sendError(sender, "You must have both voicechat.speak and voicechatutils.chat.use permissions to use this command!");
+            return null;
+        }
+        if (API == null) {
+            sendError(sender, "Simple Voice Chat has not started yet!");
+            return null;
+        }
         VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
         if (connection == null) {
-            sender.sendMessage(MINI_MESSAGE.deserialize(
-                    "<prefix> <red>You must have Simple Voice Chat installed to use this command!",
-                    Placeholder.component("prefix", PREFIX)
-            ));
-            return true;
+            sendError(sender, "You must have Simple Voice Chat installed to use this command!");
+            return null;
         }
+        return connection;
+    }
 
-        if (!CONFIG.enable_messagegroup) {
-            sender.sendMessage(MINI_MESSAGE.deserialize(
-                    "<prefix> <red>This command is disabled in the config!",
-                    Placeholder.component("prefix", PREFIX)
-            ));
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        VoicechatConnection connection = checkCanUseMessageGroup(sender);
+        if (connection == null) {
             return true;
         }
-        if (!(sender.hasPermission("voicechatutils.chat.use") || sender.hasPermission("voicechat.speak"))) {
-            sender.sendMessage(MINI_MESSAGE.deserialize(
-                    "<prefix> <red>You must have both voicechat.speak and voicechatutil.chat.use permissions to use this command!",
-                    Placeholder.component("prefix", PREFIX)
-            ));
-            return true;
-        }
+        Player player = (Player) sender;
+
         Group group = connection.getGroup();
         if (group == null) {
-            sender.sendMessage(MINI_MESSAGE.deserialize(
-                    "<prefix> <red>You must be in a group to use this command!",
-                    Placeholder.component("prefix", PREFIX)
-            ));
+            sendError(sender, "You must be in a group to use this command!");
             return true;
         }
         if (args.length == 0) {
@@ -95,6 +107,6 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
     }
 
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return List.of("");
+        return List.of();
     }
 }

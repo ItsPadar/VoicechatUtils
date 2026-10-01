@@ -94,7 +94,7 @@ public class ConfigManager {
                 // check key exists in current config, is not the same in both, and that it is not CONFIG_VERSION
                 Object value = currentConfig.get(key);
                 Object originalValue = originalConfig.get(key);
-                if ((!key.equals("CONFIG_VERSION")) && (value != null) && (value != originalValue)) {
+                if ((!key.equals("CONFIG_VERSION")) && (value != null) && !Objects.equals(value, originalValue)) {
                     originalConfig.set(key, value);
                     replaced_num++;
                     LOGGER.finest("Replaced " + key + " from `" + originalValue + "` to `" + value + "`");

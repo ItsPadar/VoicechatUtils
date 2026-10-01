@@ -52,7 +52,7 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
                         newGroupID = null;
                     }
 
-                    if (newGroupID != oldGroupID) {
+                    if (!Objects.equals(newGroupID, oldGroupID)) {
                         if (oldGroup != null) {
                             // leave event
                             leaveGroupEvent(player, oldGroup);
@@ -116,7 +116,7 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
         if (connection != null) {
             Group group = connection.getGroup();
             if (group != null) {
-                return group.getId() == groupid;
+                return group.getId().equals(groupid);
             }
         }
 
