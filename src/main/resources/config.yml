@@ -2,7 +2,7 @@
 # https://modrinth.com/plugin/voicechat-utils
 
 # Do not edit this unless you absolutely know what you are doing
-CONFIG_VERSION: 3
+CONFIG_VERSION: 4
 
 
 
@@ -44,3 +44,8 @@ enable_prefix_suffix_support: true
 # legacy - &#FF0000 - The legacy formatting code format
 # automatic - If there is a & in the prefix/suffix parse as legacy, otherwise assume minimessage
 prefix_suffix_colour_mode: automatic
+
+
+# Whether players muted in voice chat with /vcmute are also blocked from sending messages with /mg and /mgtoggle.
+# true/false
+voice_mute_blocks_messagegroup: true

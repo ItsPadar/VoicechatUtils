@@ -30,7 +30,10 @@ public class ChatListener implements Listener {
             return;
         }
 
-        MessageGroupCommand.sendMessageGroupMessage(group, player, message);
+        // Cancel even when muted, otherwise a message meant for the group would end up in public chat
         event.setCancelled(true);
+        if (!MessageGroupCommand.isBlockedByMute(player)) {
+            MessageGroupCommand.sendMessageGroupMessage(group, player, message);
+        }
     }
 }

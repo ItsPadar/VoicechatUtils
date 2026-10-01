@@ -84,6 +84,17 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         return connection;
     }
 
+    /**
+     * @return true (and tells the player why) if the player is voice muted and voice mutes also block /mg
+     */
+    public static boolean isBlockedByMute(Player player) {
+        if (CONFIG.voice_mute_blocks_messagegroup && MUTES.isMuted(player.getUniqueId())) {
+            sendError(player, "You can't send group messages while you are muted in voice chat!");
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         VoicechatConnection connection = checkCanUseMessageGroup(sender);
@@ -99,6 +110,9 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 0) {
             return false;
+        }
+        if (isBlockedByMute(player)) {
+            return true;
         }
 
         sendMessageGroupMessage(group, player, String.join(" ", args));

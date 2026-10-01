@@ -14,6 +14,9 @@ permissions:
   voicechatutils.chat.spy:
     description: "See all messages sent using `/messagegroup`"
     default: false
+  voicechatutils.mute:
+    description: "Mute and unmute players in voice chat with `/vcmute`, `/vcunmute` and `/vcmutes`, and see mute announcements"
+    default: op
 commands:
   messagegroup:
     description: "Message players in the current voice chat group!"
@@ -25,3 +28,16 @@ commands:
     usage: "/mgtoggle [<on|off>]"
     aliases: [ messagegrouptoggle ]
     permission: voicechatutils.chat.use
+  vcmute:
+    description: "Mute a player in voice chat, optionally for a set amount of time"
+    usage: "/vcmute <player> [duration, e.g. 30s, 10m, 2h, 7d, 1h30m] [reason]"
+    permission: voicechatutils.mute
+  vcunmute:
+    description: "Unmute a player in voice chat"
+    usage: "/vcunmute <player>"
+    permission: voicechatutils.mute
+  vcmutes:
+    description: "List all players that are muted in voice chat"
+    usage: "/vcmutes"
+    aliases: [ vcmutelist ]
+    permission: voicechatutils.mute
