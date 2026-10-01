@@ -14,26 +14,20 @@ import static itspadar.voicechatutils.SimpleVoiceChatAPI.API;
 public class ChatListener implements Listener {
 
     @EventHandler
-    public void onPlayerChat(@SuppressWarnings("deprecation") AsyncPlayerChatEvent event) {
+    public static void onPlayerChat(@SuppressWarnings("deprecation") AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
 
-        if (API == null || !MGToggleCommand.hasMessageGroupToggledOn(player.getUniqueId())) {
-            return;
-        }
+        Group group;
         VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
-        if (connection == null) {
-            return;
-        }
-        Group group = connection.getGroup();
-        if (group == null) {
-            return;
-        }
-
-        // Cancel even when muted, otherwise a message meant for the group would end up in public chat
-        event.setCancelled(true);
-        if (!MessageGroupCommand.isBlockedByMute(player)) {
-            MessageGroupCommand.sendMessageGroupMessage(group, player, message);
+        if (connection != null) {
+            group = connection.getGroup();
+            if (group != null) {
+                if (MGToggleCommand.hasMessageGroupToggledOn(player.getUniqueId())) {
+                    MessageGroupCommand.sendMessageGroupMessage(group, player, message);
+                    event.setCancelled(true);
+                }
+            }
         }
     }
 }

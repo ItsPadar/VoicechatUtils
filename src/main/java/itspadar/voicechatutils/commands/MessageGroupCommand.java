@@ -47,72 +47,46 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         COMPONENTLOGGER.info(Component.text("[mg] ").append(message));
     }
 
-    static void sendError(CommandSender sender, String text) {
-        sender.sendMessage(MINI_MESSAGE.deserialize(
-                "<prefix> <red>" + text,
-                Placeholder.component("prefix", PREFIX)
-        ));
-    }
-
-    /**
-     * Checks everything a player needs to use /mg or /mgtoggle, telling them what is wrong if something is.
-     *
-     * @return the player's voice chat connection, or null if they cannot use message group commands
-     */
-    static @Nullable VoicechatConnection checkCanUseMessageGroup(CommandSender sender) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can use this command!");
-            return null;
-        }
-        if (!CONFIG.enable_messagegroup) {
-            sendError(sender, "This command is disabled in the config!");
-            return null;
-        }
-        if (!(sender.hasPermission("voicechatutils.chat.use") && sender.hasPermission("voicechat.speak"))) {
-            sendError(sender, "You must have both voicechat.speak and voicechatutils.chat.use permissions to use this command!");
-            return null;
-        }
-        if (API == null) {
-            sendError(sender, "Simple Voice Chat has not started yet!");
-            return null;
-        }
-        VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
-        if (connection == null) {
-            sendError(sender, "You must have Simple Voice Chat installed to use this command!");
-            return null;
-        }
-        return connection;
-    }
-
-    /**
-     * @return true (and tells the player why) if the player is voice muted and voice mutes also block /mg
-     */
-    public static boolean isBlockedByMute(Player player) {
-        if (CONFIG.voice_mute_blocks_messagegroup && MUTES.isMuted(player.getUniqueId())) {
-            sendError(player, "You can't send group messages while you are muted in voice chat!");
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        VoicechatConnection connection = checkCanUseMessageGroup(sender);
-        if (connection == null) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Only players can use this command!");
             return true;
         }
-        Player player = (Player) sender;
 
+        VoicechatConnection connection = API.getConnectionOf(player.getUniqueId());
+        if (connection == null) {
+            sender.sendMessage(MINI_MESSAGE.deserialize(
+                    "<prefix> <red>You must have Simple Voice Chat installed to use this command!",
+                    Placeholder.component("prefix", PREFIX)
+            ));
+            return true;
+        }
+
+        if (!CONFIG.enable_messagegroup) {
+            sender.sendMessage(MINI_MESSAGE.deserialize(
+                    "<prefix> <red>This command is disabled in the config!",
+                    Placeholder.component("prefix", PREFIX)
+            ));
+            return true;
+        }
+        if (!(sender.hasPermission("voicechatutils.chat.use") || sender.hasPermission("voicechat.speak"))) {
+            sender.sendMessage(MINI_MESSAGE.deserialize(
+                    "<prefix> <red>You must have both voicechat.speak and voicechatutil.chat.use permissions to use this command!",
+                    Placeholder.component("prefix", PREFIX)
+            ));
+            return true;
+        }
         Group group = connection.getGroup();
         if (group == null) {
-            sendError(sender, "You must be in a group to use this command!");
+            sender.sendMessage(MINI_MESSAGE.deserialize(
+                    "<prefix> <red>You must be in a group to use this command!",
+                    Placeholder.component("prefix", PREFIX)
+            ));
             return true;
         }
         if (args.length == 0) {
             return false;
-        }
-        if (isBlockedByMute(player)) {
-            return true;
         }
 
         sendMessageGroupMessage(group, player, String.join(" ", args));
@@ -121,6 +95,6 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
     }
 
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return List.of();
+        return List.of("");
     }
 }
