@@ -6,11 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +24,37 @@ import static itspadar.voicechatutils.VoicechatUtils.*;
 public class VCMuteCommand implements CommandExecutor, TabCompleter {
     private static final String PERMISSION = "voicechatutils.mute";
     private static final List<String> DURATION_SUGGESTIONS = List.of("10m", "30m", "1h", "1d", "7d", "permanent");
+
+    /**
+     * Sends a message to the sender, every online player with the mute permission, and the console.
+     */
+    private static void announce(CommandSender sender, Component announcement) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player != sender && player.hasPermission(PERMISSION)) {
+                player.sendMessage(announcement);
+            }
+        }
+        sender.sendMessage(announcement);
+        if (!(sender instanceof ConsoleCommandSender)) {
+            COMPONENTLOGGER.info(announcement);
+        }
+    }
+
+    private static void reply(CommandSender sender, String text, String name) {
+        sender.sendMessage(MINI_MESSAGE.deserialize(
+                "<prefix> " + text,
+                Placeholder.component("prefix", PREFIX),
+                Placeholder.unparsed("name", name)
+        ));
+    }
+
+    private static @Nullable OfflinePlayer findPlayer(String name) {
+        Player online = Bukkit.getPlayerExact(name);
+        if (online != null) {
+            return online;
+        }
+        return Bukkit.getOfflinePlayerIfCached(name);
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -72,7 +99,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         Player online = target.getPlayer();
         if (online != null) {
             online.sendMessage(MINI_MESSAGE.deserialize(
-                    "<prefix> <red>You have been muted in voice chat <duration>.<reason>",
+                    "<prefix> <red>You have been muted in voicechat <duration>.<reason>",
                     Placeholder.component("prefix", PREFIX),
                     Placeholder.unparsed("duration", mute.isPermanent() ? "permanently" : "for " + mute.remaining()),
                     Placeholder.component("reason", reasonText)
@@ -80,7 +107,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         }
 
         Component announcement = MINI_MESSAGE.deserialize(
-                "<prefix> <yellow><name></yellow> was muted in voice chat by <yellow><sender></yellow> <duration>.<reason>",
+                "<prefix> <yellow><name></yellow> was muted in voicechat by <yellow><sender></yellow> <duration>.<reason>",
                 Placeholder.component("prefix", PREFIX),
                 Placeholder.unparsed("name", name),
                 Placeholder.unparsed("sender", sender.getName()),
@@ -112,20 +139,20 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         }
 
         if (removed == null) {
-            reply(sender, "<red><name> is not muted in voice chat!", args[0]);
+            reply(sender, "<red><name> is not muted in voicechat!", args[0]);
             return true;
         }
 
         Player online = Bukkit.getPlayer(removed.player());
         if (online != null) {
             online.sendMessage(MINI_MESSAGE.deserialize(
-                    "<prefix> <green>You have been unmuted in voice chat.",
+                    "<prefix> <green>You have been unmuted in voicechat.",
                     Placeholder.component("prefix", PREFIX)
             ));
         }
 
         Component announcement = MINI_MESSAGE.deserialize(
-                "<prefix> <yellow><name></yellow> was unmuted in voice chat by <yellow><sender></yellow>.",
+                "<prefix> <yellow><name></yellow> was unmuted in voicechat by <yellow><sender></yellow>.",
                 Placeholder.component("prefix", PREFIX),
                 Placeholder.unparsed("name", removed.name()),
                 Placeholder.unparsed("sender", sender.getName())
@@ -137,43 +164,12 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
     private boolean list(CommandSender sender) {
         List<Mute> mutes = MUTES.getMutes();
         if (mutes.isEmpty()) {
-            reply(sender, "<green>Nobody is muted in voice chat.", "");
+            reply(sender, "<green>Nobody is voicechat muted.", "");
             return true;
         }
-        reply(sender, "<white><name> muted in voice chat:", mutes.size() + (mutes.size() == 1 ? " player is" : " players are"));
+        reply(sender, "<white><name> muted in voicechat:", mutes.size() + (mutes.size() == 1 ? " player is" : " players are"));
         mutes.forEach(mute -> sender.sendMessage(Component.text(" - ").append(MuteManager.describe(mute))));
         return true;
-    }
-
-    /**
-     * Sends a message to the sender, every online player with the mute permission, and the console.
-     */
-    private static void announce(CommandSender sender, Component announcement) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player != sender && player.hasPermission(PERMISSION)) {
-                player.sendMessage(announcement);
-            }
-        }
-        sender.sendMessage(announcement);
-        if (!(sender instanceof ConsoleCommandSender)) {
-            COMPONENTLOGGER.info(announcement);
-        }
-    }
-
-    private static void reply(CommandSender sender, String text, String name) {
-        sender.sendMessage(MINI_MESSAGE.deserialize(
-                "<prefix> " + text,
-                Placeholder.component("prefix", PREFIX),
-                Placeholder.unparsed("name", name)
-        ));
-    }
-
-    private static @Nullable OfflinePlayer findPlayer(String name) {
-        Player online = Bukkit.getPlayerExact(name);
-        if (online != null) {
-            return online;
-        }
-        return Bukkit.getOfflinePlayerIfCached(name);
     }
 
     @Override

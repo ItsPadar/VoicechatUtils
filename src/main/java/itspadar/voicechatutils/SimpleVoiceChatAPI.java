@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -19,7 +20,7 @@ import static org.bukkit.Bukkit.getOnlinePlayers;
 
 public class SimpleVoiceChatAPI implements VoicechatPlugin {
     static final Map<Player, Group> playerGroupMap = new HashMap<>();
-    public static VoicechatServerApi API;
+    public static @Nullable VoicechatServerApi API;
 
     static void playerTick() {
         if (API != null) {

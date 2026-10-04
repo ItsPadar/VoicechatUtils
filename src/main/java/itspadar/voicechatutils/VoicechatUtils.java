@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -36,12 +35,13 @@ public class VoicechatUtils extends JavaPlugin {
         Objects.requireNonNull(getCommand("mgtoggle")).setExecutor(new MGToggleCommand());
 
         MUTES = new MuteManager(this);
-        VCMuteCommand vcMuteCommand = new VCMuteCommand();
-        for (String name : List.of("vcmute", "vcunmute", "vcmutes")) {
-            Objects.requireNonNull(getCommand(name)).setExecutor(vcMuteCommand);
-        }
+        VCMuteCommand MuteCommand = new VCMuteCommand();
+        Objects.requireNonNull(getCommand("vcmute")).setExecutor(MuteCommand);
+        Objects.requireNonNull(getCommand("vcunmute")).setExecutor(MuteCommand);
+        Objects.requireNonNull(getCommand("vcmutes")).setExecutor(MuteCommand);
 
-        // register voice chat plugins
+
+        // register voicechat plugins
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
             service.registerPlugin(new SimpleVoiceChatAPI());
@@ -59,6 +59,7 @@ public class VoicechatUtils extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
 
-        LOGGER.info("VoicechatUtils " + getPluginMeta().getVersion() + " has loaded!");
+        //noinspection deprecation
+        LOGGER.info("VoicechatUtils " + this.getDescription().getVersion() + " has loaded!");
     }
 }

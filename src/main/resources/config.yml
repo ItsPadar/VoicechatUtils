@@ -46,6 +46,6 @@ enable_prefix_suffix_support: true
 prefix_suffix_colour_mode: automatic
 
 
-# Whether players muted in voice chat with /vcmute are also blocked from sending messages with /mg and /mgtoggle.
+# Whether players muted in voicechat with /vcmute are also blocked from sending messages with /mg and /mgtoggle.
 # true/false
 voice_mute_blocks_messagegroup: true

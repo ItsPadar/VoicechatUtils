@@ -2,6 +2,7 @@ package itspadar.voicechatutils.commands;
 
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
+import itspadar.voicechatutils.MuteManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -43,7 +44,6 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-
         COMPONENTLOGGER.info(Component.text("[mg] ").append(message));
     }
 
@@ -57,7 +57,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
     /**
      * Checks everything a player needs to use /mg or /mgtoggle, telling them what is wrong if something is.
      *
-     * @return the player's voice chat connection, or null if they cannot use message group commands
+     * @return the player's voicechat connection, or null if they cannot use message group commands
      */
     static @Nullable VoicechatConnection checkCanUseMessageGroup(CommandSender sender) {
         if (!(sender instanceof Player player)) {
@@ -88,8 +88,13 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
      * @return true (and tells the player why) if the player is voice muted and voice mutes also block /mg
      */
     public static boolean isBlockedByMute(Player player) {
-        if (CONFIG.voice_mute_blocks_messagegroup && MUTES.isMuted(player.getUniqueId())) {
-            sendError(player, "You can't send group messages while you are muted in voice chat!");
+        MuteManager.Mute mute = MUTES.getMute(player.getUniqueId());
+        if (CONFIG.voice_mute_blocks_messagegroup && mute != null) {
+            player.sendMessage(MINI_MESSAGE.deserialize(
+                    "<prefix> <red>You can't send group messages while you are muted in voicechat <duration>!",
+                    Placeholder.component("prefix", PREFIX),
+                    Placeholder.unparsed("duration", mute.isPermanent() ? "permanently" : "for " + mute.remaining())
+            ));
             return true;
         }
         return false;
