@@ -13,7 +13,7 @@ permissions:
     default: true
   voicechatutils.chat.spy:
     description: "See all messages sent using `/messagegroup`"
-    default: false
+    default: op
   voicechatutils.mute:
     description: "Mute and unmute players in voice chat with `/vcmute`, `/vcunmute` and `/vcmutes`, and see mute announcements"
     default: op

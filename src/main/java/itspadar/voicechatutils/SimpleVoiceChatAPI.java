@@ -114,6 +114,9 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
     }
 
     public static boolean isInGroup(@NotNull UUID playerid, @NotNull UUID groupid) {
+        if (API == null) {
+            return false;
+        }
         VoicechatConnection connection = API.getConnectionOf(playerid);
         if (connection != null) {
             Group group = connection.getGroup();
