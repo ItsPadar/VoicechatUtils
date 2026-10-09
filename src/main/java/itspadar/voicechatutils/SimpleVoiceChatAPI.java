@@ -19,7 +19,7 @@ import static itspadar.voicechatutils.VoicechatUtils.*;
 import static org.bukkit.Bukkit.getOnlinePlayers;
 
 public class SimpleVoiceChatAPI implements VoicechatPlugin {
-    static final Map<Player, Group> playerGroupMap = new HashMap<>();
+    static final @NotNull Map<Player, Group> playerGroupMap = new HashMap<>();
     public static @Nullable VoicechatServerApi API;
 
     static void playerTick() {
@@ -128,7 +128,7 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
         return false;
     }
 
-    public static List<Player> getPlayersInGroup(UUID groupid) {
+    public static @NotNull List<Player> getPlayersInGroup(@NotNull UUID groupid) {
         List<Player> result = new ArrayList<>();
         for (Player player : getOnlinePlayers()) {
             if (isInGroup(player.getUniqueId(), groupid)) {
@@ -139,25 +139,25 @@ public class SimpleVoiceChatAPI implements VoicechatPlugin {
     }
 
     @Override
-    public String getPluginId() {
+    public @NotNull String getPluginId() {
         return "voicechatutils";
     }
 
     @Override
-    public void registerEvents(EventRegistration register) {
+    public void registerEvents(@NotNull EventRegistration register) {
         register.registerEvent(VoicechatServerStartedEvent.class, this::serverStart);
         register.registerEvent(MicrophonePacketEvent.class, this::onMicrophonePacket);
-        LOGGER.info("Registered events");
+        LOGGER.info("Registered Simple Voice Chat events");
     }
 
-    public void serverStart(VoicechatServerStartedEvent event) {
+    public void serverStart(@NotNull VoicechatServerStartedEvent event) {
         API = event.getVoicechat();
     }
 
     /**
      * Drops audio from voice muted players before it reaches anyone. Runs on the voice chat thread.
      */
-    private void onMicrophonePacket(MicrophonePacketEvent event) {
+    private void onMicrophonePacket(@NotNull MicrophonePacketEvent event) {
         VoicechatConnection sender = event.getSenderConnection();
         if (sender == null) {
             return;

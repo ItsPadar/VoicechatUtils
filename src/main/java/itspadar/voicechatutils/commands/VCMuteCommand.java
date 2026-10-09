@@ -22,13 +22,13 @@ import static itspadar.voicechatutils.VoicechatUtils.*;
  * Handles /vcmute, /vcunmute and /vcmutes.
  */
 public class VCMuteCommand implements CommandExecutor, TabCompleter {
-    private static final String PERMISSION = "voicechatutils.mute";
-    private static final List<String> DURATION_SUGGESTIONS = List.of("10m", "30m", "1h", "1d", "7d", "permanent");
+    private static final @NotNull String PERMISSION = "voicechatutils.mute";
+    private static final @NotNull List<String> DURATION_SUGGESTIONS = List.of("10m", "30m", "1h", "1d", "7d", "permanent");
 
     /**
      * Sends a message to the sender, every online player with the mute permission, and the console.
      */
-    private static void announce(CommandSender sender, Component announcement) {
+    private static void announce(@NotNull CommandSender sender, @NotNull Component announcement) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player != sender && player.hasPermission(PERMISSION)) {
                 player.sendMessage(announcement);
@@ -40,7 +40,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private static void reply(CommandSender sender, String text, String name) {
+    private static void reply(@NotNull CommandSender sender, @NotNull String text, @NotNull String name) {
         sender.sendMessage(MINI_MESSAGE.deserialize(
                 "<prefix> " + text,
                 Placeholder.component("prefix", PREFIX),
@@ -48,7 +48,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         ));
     }
 
-    private static @Nullable OfflinePlayer findPlayer(String name) {
+    private static @Nullable OfflinePlayer findPlayer(@NotNull String name) {
         Player online = Bukkit.getPlayerExact(name);
         if (online != null) {
             return online;
@@ -57,7 +57,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         return switch (command.getName()) {
             case "vcmute" -> mute(sender, args);
             case "vcunmute" -> unmute(sender, args);
@@ -65,7 +65,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         };
     }
 
-    private boolean mute(CommandSender sender, String[] args) {
+    private boolean mute(@NotNull CommandSender sender, @NotNull String @NotNull [] args) {
         if (args.length == 0) {
             return false;
         }
@@ -118,7 +118,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean unmute(CommandSender sender, String[] args) {
+    private boolean unmute(@NotNull CommandSender sender, @NotNull String @NotNull [] args) {
         if (args.length != 1) {
             return false;
         }
@@ -161,7 +161,8 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean list(CommandSender sender) {
+    @SuppressWarnings("SameReturnValue")
+    private boolean list(@NotNull CommandSender sender) {
         List<Mute> mutes = MUTES.getMutes();
         if (mutes.isEmpty()) {
             reply(sender, "<green>Nobody is voicechat muted.", "");
@@ -173,7 +174,7 @@ public class VCMuteCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length != 1 && !(command.getName().equals("vcmute") && args.length == 2)) {
             return List.of();
         }

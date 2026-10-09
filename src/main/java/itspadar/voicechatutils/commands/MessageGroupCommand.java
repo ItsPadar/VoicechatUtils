@@ -23,7 +23,7 @@ import static itspadar.voicechatutils.VoicechatUtils.*;
 
 public class MessageGroupCommand implements CommandExecutor, TabCompleter {
 
-    public static void sendMessageGroupMessage(Group group, Player player, String mg) {
+    public static void sendMessageGroupMessage(@NotNull Group group, @NotNull Player player, @NotNull String mg) {
         Component message = MINI_MESSAGE.deserialize(
                 CONFIG.messagegroup_text,
                 Placeholder.unparsed("group", group.getName()),
@@ -47,7 +47,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
         COMPONENTLOGGER.info(Component.text("[mg] ").append(message));
     }
 
-    static void sendError(CommandSender sender, String text) {
+    static void sendError(@NotNull CommandSender sender, @NotNull String text) {
         sender.sendMessage(MINI_MESSAGE.deserialize(
                 "<prefix> <red>" + text,
                 Placeholder.component("prefix", PREFIX)
@@ -87,7 +87,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
     /**
      * @return true (and tells the player why) if the player is voice muted and voice mutes also block /mg
      */
-    public static boolean isBlockedByMute(Player player) {
+    public static boolean isBlockedByMute(@NotNull Player player) {
         MuteManager.Mute mute = MUTES.getMute(player.getUniqueId());
         if (CONFIG.voice_mute_blocks_messagegroup && mute != null) {
             player.sendMessage(MINI_MESSAGE.deserialize(
@@ -101,7 +101,7 @@ public class MessageGroupCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         VoicechatConnection connection = checkCanUseMessageGroup(sender);
         if (connection == null) {
             return true;

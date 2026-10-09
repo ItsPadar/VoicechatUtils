@@ -10,13 +10,14 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.logging.Logger;
 
 public class VoicechatUtils extends JavaPlugin {
-    public static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-    public static final Component PREFIX = MINI_MESSAGE.deserialize("<click:open_url:'https://modrinth.com/project/voicechat-utils'><hover:show_text:'https://modrinth.com/project/voicechat-utils'>[<blue>Voicechat Utils</blue>]</hover></click>");
+    public static final @NotNull MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+    public static final @NotNull Component PREFIX = MINI_MESSAGE.deserialize("<click:open_url:'https://modrinth.com/project/voicechat-utils'><hover:show_text:'https://modrinth.com/project/voicechat-utils'>[<blue>Voicechat Utils</blue>]</hover></click>");
     public static Logger LOGGER;
     public static ComponentLogger COMPONENTLOGGER;
     public static ConfigManager CONFIG;

@@ -26,14 +26,14 @@ import static itspadar.voicechatutils.VoicechatUtils.*;
  */
 public class MuteManager {
     public static final long PERMANENT = -1;
-    private static final Pattern DURATION_PART = Pattern.compile("(\\d+)([smhdw])");
+    private static final @NotNull Pattern DURATION_PART = Pattern.compile("(\\d+)([smhdw])");
     private static final long MUTED_NOTICE_COOLDOWN_MS = 3000;
-    private final VoicechatUtils plugin;
-    private final File file;
-    private final Map<UUID, Mute> mutes = new ConcurrentHashMap<>();
-    private final Map<UUID, Long> lastMutedNotice = new ConcurrentHashMap<>();
+    private final @NotNull VoicechatUtils plugin;
+    private final @Nullable File file;
+    private final @NotNull Map<UUID, Mute> mutes = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, Long> lastMutedNotice = new ConcurrentHashMap<>();
 
-    public MuteManager(VoicechatUtils plugin) {
+    public MuteManager(@NotNull VoicechatUtils plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "mutes.yml");
         load();
@@ -75,7 +75,7 @@ public class MuteManager {
         return total;
     }
 
-    public static String formatDuration(long millis) {
+    public static @NotNull String formatDuration(long millis) {
         long seconds = Math.max(1, (millis + 999) / 1000);
         long days = seconds / 86400;
         long hours = seconds % 86400 / 3600;
@@ -90,7 +90,7 @@ public class MuteManager {
         return builder.toString().trim();
     }
 
-    public static Component describe(@NotNull Mute mute) {
+    public static @NotNull Component describe(@NotNull Mute mute) {
         return MINI_MESSAGE.deserialize(
                 "<yellow><name></yellow> <gray>-</gray> <duration> <gray>(</gray>by <mutedby><separator><reason><gray>)</gray>",
                 Placeholder.unparsed("name", mute.name()),
@@ -101,8 +101,9 @@ public class MuteManager {
         );
     }
 
+
     private void load() {
-        if (!file.exists()) {
+        if (file == null || !file.exists()) {
             return;
         }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
@@ -124,10 +125,14 @@ public class MuteManager {
                 LOGGER.warning("Ignoring invalid UUID in mutes.yml: " + key);
             }
         }
-        LOGGER.info("Loaded " + mutes.size() + " voicechat mutes");
+        LOGGER.info("Loaded " + mutes.size() + " voicechat mute(s)");
     }
 
     private void save() {
+        if (file == null) {
+            LOGGER.severe("Failed to save mutes.yml: MuteManager file was null");
+            return;
+        }
         YamlConfiguration yaml = new YamlConfiguration();
         for (Mute mute : mutes.values()) {
             ConfigurationSection section = yaml.createSection(mute.player().toString());
@@ -174,7 +179,7 @@ public class MuteManager {
         return mute == null || mute.isExpired() ? null : mute;
     }
 
-    public List<Mute> getMutes() {
+    public @NotNull List<Mute> getMutes() {
         return mutes.values().stream()
                 .filter(mute -> !mute.isExpired())
                 .sorted(Comparator.comparing(Mute::name, String.CASE_INSENSITIVE_ORDER))
@@ -234,7 +239,7 @@ public class MuteManager {
             return !isPermanent() && System.currentTimeMillis() >= until;
         }
 
-        public String remaining() {
+        public @NotNull String remaining() {
             return isPermanent() ? "permanently" : formatDuration(until - System.currentTimeMillis());
         }
     }

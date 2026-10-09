@@ -19,14 +19,14 @@ import static itspadar.voicechatutils.VoicechatUtils.*;
 
 public class MGToggleCommand implements CommandExecutor, TabCompleter {
 
-    private static final HashSet<UUID> MessageGroupToggledOn = new HashSet<>();
+    private static final @NotNull HashSet<UUID> MessageGroupToggledOn = new HashSet<>();
 
     public static boolean hasMessageGroupToggledOn(UUID player) {
         return MessageGroupToggledOn.contains(player);
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (MessageGroupCommand.checkCanUseMessageGroup(sender) == null) {
             return true;
         }
@@ -72,7 +72,7 @@ public class MGToggleCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length != 1) {
             return List.of();
         }

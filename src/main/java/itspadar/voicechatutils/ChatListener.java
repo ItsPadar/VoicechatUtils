@@ -8,13 +8,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.jetbrains.annotations.NotNull;
 
 import static itspadar.voicechatutils.SimpleVoiceChatAPI.API;
 
 public class ChatListener implements Listener {
 
     @EventHandler
-    public void onPlayerChat(@SuppressWarnings("deprecation") AsyncPlayerChatEvent event) {
+    public void onPlayerChat(@SuppressWarnings("deprecation") @NotNull AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
         if (API == null || !MGToggleCommand.hasMessageGroupToggledOn(player.getUniqueId())) {

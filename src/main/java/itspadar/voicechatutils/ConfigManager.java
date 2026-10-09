@@ -2,6 +2,7 @@ package itspadar.voicechatutils;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,7 +28,7 @@ public class ConfigManager {
     public String prefix_suffix_colour_mode;
     public Boolean voice_mute_blocks_messagegroup;
 
-    public ConfigManager(VoicechatUtils plugin) {
+    public ConfigManager(@NotNull VoicechatUtils plugin) {
         plugin.saveDefaultConfig();
 
         File currentConfigFile = new File(plugin.getDataFolder(), "config.yml");
@@ -38,19 +39,19 @@ public class ConfigManager {
         try {
             currentConfig.load(currentConfigFile);
         } catch (IOException | InvalidConfigurationException e) {
-            throw new RuntimeException("Exception occurred while loading configuration files!", e);
+            throw new RuntimeException("Exception occurred while loading config.yml file!", e);
         }
 
         int configver = currentConfig.getInt("CONFIG_VERSION", 0);
         if (configver == 0) {
-            LOGGER.info("Found unknown config version. This is likely due to an old version being updated or something weird.");
+            LOGGER.info("Found unknown config.yml version. This is likely due to an old version being updated or something weird.");
         } else {
-            LOGGER.info("Found config version " + configver);
+            LOGGER.info("Found config.yml version " + configver);
         }
 
         if (configver > CONFIG_VERSION) {
             throw new RuntimeException("Config.yml CONFIG_VERSION variable is  " + configver +
-                    " which is bigger than the plugin's internal config version " + CONFIG_VERSION +
+                    " which is bigger than the plugin's internal config.yml version " + CONFIG_VERSION +
                     "! Please ensure you have the correct VoicechatUtils version! Set CONFIG_VERSION to 0 or remove config.yml to override this warning."
             );
         } else if (configver < CONFIG_VERSION) {
@@ -69,10 +70,11 @@ public class ConfigManager {
                         }
                     }
                 }
+                //noinspection UnusedAssignment
                 configver = 2;
             }
             // if per version migration logic is necessary then it would go here
-            LOGGER.info("Attempting upgrade to " + CONFIG_VERSION);
+            LOGGER.info("Attempting config.yml upgrade to " + CONFIG_VERSION);
 
             YamlConfiguration originalConfig = new YamlConfiguration();
             originalConfig.options().parseComments(true);
@@ -86,7 +88,7 @@ public class ConfigManager {
                                 )
                 );
             } catch (InvalidConfigurationException e) {
-                throw new RuntimeException("Exception occurred while loading configuration files!", e);
+                throw new RuntimeException("Exception occurred while loading config.yml file!", e);
             }
 
             int ignored_num = 0;
@@ -112,7 +114,7 @@ public class ConfigManager {
             }
             currentConfig = originalConfig;
 
-            LOGGER.info("Updated config to version " + CONFIG_VERSION + " with " + replaced_num + " non default values converted and " + ignored_num + " ignored values!");
+            LOGGER.info("Updated config.yml to version " + CONFIG_VERSION + " with " + replaced_num + " non default values converted and " + ignored_num + " ignored values!");
         }
 
         enable_messagegroup = currentConfig.getBoolean("enable_messagegroup");
@@ -140,6 +142,6 @@ public class ConfigManager {
 
         voice_mute_blocks_messagegroup = currentConfig.getBoolean("voice_mute_blocks_messagegroup", true);
 
-        LOGGER.info("Loaded config");
+        LOGGER.info("Finished loading config.yml");
     }
 }
